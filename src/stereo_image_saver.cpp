@@ -70,7 +70,7 @@ class StereoImageSaver {
     std::unique_lock<std::mutex> lck(mtx_);
     cv::hconcat(img1_, img2_, two_images);
     lck.unlock();
-    cv::resize(two_images, two_images, cv::Size(two_images.cols / 3, two_images.rows / 3));
+    cv::resize(two_images, two_images, cv::Size(two_images.cols / 2, two_images.rows / 2));
     cv::imshow("Two Images", two_images);
     cv::waitKey(1000 / 30);
   }
@@ -86,8 +86,10 @@ class StereoImageSaver {
       f2 = directory_ / ("r" + std::to_string(filename_id_) + ".png");
       std::unique_lock<std::mutex> lck(mtx_);
       if (img1_.empty() || img2_.empty()) continue;
-      cv::imwrite(f1.c_str(), img1_);
-      cv::imwrite(f2.c_str(), img2_);
+      cv::Mat img1 = img1_.clone();
+      cv::Mat img2 = img2_.clone();
+      cv::imwrite(f1.c_str(), img1);
+      cv::imwrite(f2.c_str(), img2);
       lck.unlock();
       ROS_INFO("Saved! ID is %d.", filename_id_);
       filename_id_++;
